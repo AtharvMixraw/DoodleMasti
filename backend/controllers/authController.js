@@ -29,4 +29,22 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+const getUserDetails = async (req, res) => {
+    try {
+      const user = await User.findOne({
+        where: { id: req.user.id }, // `req.user` is populated by `authenticateToken` middleware
+        attributes: ["id", "username", "email"], // Return only relevant fields
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found." });
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
+
+module.exports = { signup, login, getUserDetails };

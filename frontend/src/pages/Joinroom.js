@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function JoinRoom() {
   const [roomId, setRoomId] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   const handleJoin = () => {
-    if (roomId) {
-      alert(`Joining room with ID: ${roomId}`);
-      // Navigate to the doodle editor
+    if (roomId.trim()) {
+      // Navigate to the Doodle editor with the room ID
+      navigate(`/doodle/${roomId}`);
     } else {
       alert('Please enter a valid Room ID.');
     }

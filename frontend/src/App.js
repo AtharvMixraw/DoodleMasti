@@ -5,6 +5,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import CreateRoom from "./pages/Createroom";
 import JoinRoom from "./pages/Joinroom";
+import Doodle from './pages/Doodle';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/create-room" element={<CreateRoom />} />
         <Route path="/join-room" element={<JoinRoom />} />
+        <Route path="/doodle/:roomId" element={<Doodle />} />
       </Routes>
     </Router>
   );

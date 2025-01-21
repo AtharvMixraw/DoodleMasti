@@ -2,34 +2,38 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
-
 const Doodle = () => {
   const { roomId } = useParams();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [socketInstance] = useState(() => io("http://localhost:5000"));
 
   useEffect(() => {
-    // Join the room
-    socket.emit("join-room", roomId);
+    socketInstance.emit("join-room", roomId);
 
-    // Listen for user joins
-    socket.on("user-joined", (msg) => {
+    const handleUserJoined = (msg) => {
       setMessages((prev) => [...prev, msg]);
-    });
+    };
 
-    // Listen for incoming messages
-    socket.on("receive-message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+    const handleReceivedMessage = (data) => {
+      setMessages((prev) => [...prev, `${data.senderId === socketInstance.id ? "You" : "User"}: ${data.message}`]);
+    };
 
-    return () => socket.disconnect();
-  }, [roomId]);
+    socketInstance.on("user-joined", handleUserJoined);
+    socketInstance.on("receive-message", handleReceivedMessage);
+
+    return () => {
+      socketInstance.off("user-joined", handleUserJoined);
+      socketInstance.off("receive-message", handleReceivedMessage);
+      socketInstance.disconnect();
+    };
+  }, [roomId, socketInstance]);
 
   const sendMessage = () => {
-    socket.emit("send-message", { roomId, message });
-    setMessages((prev) => [...prev, `You: ${message}`]);
-    setMessage("");
+    if (message.trim()) {
+      socketInstance.emit("send-message", { roomId, message });
+      setMessage("");
+    }
   };
 
   return (

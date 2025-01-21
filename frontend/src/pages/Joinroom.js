@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function JoinRoom() {
   const [roomId, setRoomId] = useState('');
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (roomId.trim()) {
-      // Navigate to the Doodle editor with the room ID
-      navigate(`/doodle/${roomId}`);
+      try {
+        // Validate the Room ID with the backend
+        await axios.post('http://localhost:5000/api/room/join-room', { roomId });
+        navigate(`/doodle/${roomId}`); // Navigate to the room if valid
+      } catch (error) {
+        alert('Room not found. Please check the Room ID and try again.');
+      }
     } else {
       alert('Please enter a valid Room ID.');
     }
